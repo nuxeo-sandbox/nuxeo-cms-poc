@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.cms.smartcrop.commands">
+
+	<require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib
+	</require>
+
+	<extension
+		target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+		point="command">
+
+		<command name="smartCrop" enabled="true">
+			<commandLine>docker</commandLine>
+			<testParameterString>-v</testParameterString>
+			<parameterString>run --rm -v #{tmp}:/workdir 
+				d94cbe0e74f0 -W #{W} -H #{H}
+				-i /workdir/#{inFile} -o /workdir/#{outFile}
+			</parameterString>
+			<installationDirective>Please, install docker
+				(https://www.docker.com/)
+			</installationDirective>
+		</command>
+
+	</extension>
+
+</component>
