@@ -4,21 +4,46 @@
 	<require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib
 	</require>
 
+	  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" point="commandTester">
+	    <documentation>Simple default tester that only checks for command existence in the system path.</documentation>
+	    <commandTester name="DockerCommandTester"
+	      class="org.nuxeo.ecm.cms.smartcrop.DockerCommandTester">
+	    </commandTester>
+	  </extension>
+
+
 	<extension
 		target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
 		point="command">
 
 		<command name="smartCrop" enabled="true">
-			<commandLine>docker</commandLine>
-			<testParameterString>-v</testParameterString>
-			<parameterString>run --rm -v #{tmp}:/workdir 
-				d94cbe0e74f0 -W #{W} -H #{H}
-				-i /workdir/#{inFile} -o /workdir/#{outFile}
+			<commandLine>docker</commandLine>		
+			<tester>DockerCommandTester</tester>	
+			<testParameterString>images -q nuxeo/smartcrop</testParameterString>
+			<parameterString>run --rm -v #{inDir}:/in -v #{outDirPath}:/out nuxeo/smartcrop -W #{W} -H #{H} -i /in/#{inFile} -o /out/#{outFile}
 			</parameterString>
 			<installationDirective>Please, install docker
 				(https://www.docker.com/)
 			</installationDirective>
 		</command>
+		
+	</extension>
+
+
+	<extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"
+		point="converter">
+
+		<converter name="smartCrop"
+			class="org.nuxeo.ecm.cms.smartcrop.DockerCommandLineConverter">
+			<sourceMimeType>image/*</sourceMimeType>
+			<sourceMimeType>application/photoshop</sourceMimeType>
+			<destinationMimeType>image/jpeg</destinationMimeType>
+			<destinationMimeType>image/png</destinationMimeType>
+			<destinationMimeType>image/gif</destinationMimeType>
+			<parameters>
+				<parameter name="CommandLineName">smartCrop</parameter>
+			</parameters>
+		</converter>
 
 	</extension>
 
